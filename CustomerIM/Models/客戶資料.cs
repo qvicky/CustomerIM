@@ -11,6 +11,7 @@ namespace CustomerIM.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     
     public partial class 客戶資料
     {
@@ -28,6 +29,7 @@ namespace CustomerIM.Models
         public string 傳真 { get; set; }
         public string 地址 { get; set; }
         public string Email { get; set; }
+        public Nullable<bool> IsDeleted { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<客戶銀行資訊> 客戶銀行資訊 { get; set; }

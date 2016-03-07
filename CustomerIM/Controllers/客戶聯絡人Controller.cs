@@ -15,9 +15,14 @@ namespace CustomerIM.Controllers
         private 客戶資料Entities db = new 客戶資料Entities();
 
         // GET: 客戶聯絡人
-        public ActionResult Index()
+        public ActionResult Index(string ContactName)
         {
-            var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料);
+            //var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料);
+            var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料).Where(p => p.IsDeleted == false);  //Vicky :  顯示未刪除資料
+            if (!string.IsNullOrEmpty(ContactName)) {
+                客戶聯絡人 = 客戶聯絡人.Where(p => p.姓名.Contains(ContactName));
+            }
+
             return View(客戶聯絡人.ToList());
         }
 
@@ -48,10 +53,14 @@ namespace CustomerIM.Controllers
         // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 客戶聯絡人)
+        public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話,IsDeleted")] 客戶聯絡人 客戶聯絡人)
         {
+            //同一個客戶下的聯絡人，其 Email 不能重複
+            //客戶聯絡人 hasSameMoblie = db.客戶聯絡人.Where(p => p.客戶Id == 客戶聯絡人.客戶Id && p.Email == 客戶聯絡人.Email).FirstOrDefault();
+
             if (ModelState.IsValid)
             {
+                客戶聯絡人.IsDeleted = false;  //Vicky : 預設先給False
                 db.客戶聯絡人.Add(客戶聯絡人);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -82,11 +91,12 @@ namespace CustomerIM.Controllers
         // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話")] 客戶聯絡人 客戶聯絡人)
+        public ActionResult Edit([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話,IsDeleted")] 客戶聯絡人 客戶聯絡人)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(客戶聯絡人).State = EntityState.Modified;
+                客戶聯絡人.IsDeleted = false;  //Vicky : 
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -115,7 +125,8 @@ namespace CustomerIM.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             客戶聯絡人 客戶聯絡人 = db.客戶聯絡人.Find(id);
-            db.客戶聯絡人.Remove(客戶聯絡人);
+            //db.客戶聯絡人.Remove(客戶聯絡人);  //Vicky : 不刪除資料
+            客戶聯絡人.IsDeleted = true; //Vicky : 更改是否刪除記號
             db.SaveChanges();
             return RedirectToAction("Index");
         }

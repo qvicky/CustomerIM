@@ -15,9 +15,13 @@ namespace CustomerIM.Controllers
         private 客戶資料Entities db = new 客戶資料Entities();
 
         // GET: 客戶銀行資訊
-        public ActionResult Index()
+        public ActionResult Index(string BankName)
         {
-            var 客戶銀行資訊 = db.客戶銀行資訊.Include(客 => 客.客戶資料);
+            //var 客戶銀行資訊 = db.客戶銀行資訊.Include(客 => 客.客戶資料);
+            var 客戶銀行資訊 = db.客戶銀行資訊.Include(客 => 客.客戶資料).Where(p => p.IsDeleted == false);  //Vicky :  顯示未刪除資料
+            if (!string.IsNullOrEmpty(BankName)) {
+                客戶銀行資訊 = 客戶銀行資訊.Where(p => p.銀行名稱.Contains(BankName));
+            }
             return View(客戶銀行資訊.ToList());
         }
 
@@ -48,10 +52,11 @@ namespace CustomerIM.Controllers
         // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,客戶Id,銀行名稱,銀行代碼,分行代碼,帳戶名稱,帳戶號碼")] 客戶銀行資訊 客戶銀行資訊)
+        public ActionResult Create([Bind(Include = "Id,客戶Id,銀行名稱,銀行代碼,分行代碼,帳戶名稱,帳戶號碼,IsDeleted")] 客戶銀行資訊 客戶銀行資訊)
         {
             if (ModelState.IsValid)
             {
+                客戶銀行資訊.IsDeleted = false;  //Vicky : 預設先給False
                 db.客戶銀行資訊.Add(客戶銀行資訊);
                 db.SaveChanges();
                 return RedirectToAction("Index");
@@ -82,11 +87,12 @@ namespace CustomerIM.Controllers
         // 詳細資訊，請參閱 http://go.microsoft.com/fwlink/?LinkId=317598。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,客戶Id,銀行名稱,銀行代碼,分行代碼,帳戶名稱,帳戶號碼")] 客戶銀行資訊 客戶銀行資訊)
+        public ActionResult Edit([Bind(Include = "Id,客戶Id,銀行名稱,銀行代碼,分行代碼,帳戶名稱,帳戶號碼,IsDeleted")] 客戶銀行資訊 客戶銀行資訊)
         {
             if (ModelState.IsValid)
             {
                 db.Entry(客戶銀行資訊).State = EntityState.Modified;
+                客戶銀行資訊.IsDeleted = false;  //Vicky : 
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -115,7 +121,8 @@ namespace CustomerIM.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             客戶銀行資訊 客戶銀行資訊 = db.客戶銀行資訊.Find(id);
-            db.客戶銀行資訊.Remove(客戶銀行資訊);
+            //db.客戶銀行資訊.Remove(客戶銀行資訊);  //Vicky : 不刪除資料
+            客戶銀行資訊.IsDeleted = true; //Vicky : 更改是否刪除記號
             db.SaveChanges();
             return RedirectToAction("Index");
         }

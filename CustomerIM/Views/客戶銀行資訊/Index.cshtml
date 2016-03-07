@@ -9,6 +9,11 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+@using (Html.BeginForm()) {
+    @Html.Label("銀行名稱：")
+    @Html.TextBox("BankName")
+    <input type="submit" id="btnSubmmit" value="搜尋" />
+}
 <table class="table">
     <tr>
         <th>

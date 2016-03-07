@@ -7,8 +7,14 @@
 <h2>客戶資訊</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create") | 
+    @Html.ActionLink("客戶相關資訊", "ClientReleationInfo")
 </p>
+@using (Html.BeginForm()) {
+    @Html.Label("客戶名稱：")
+    @Html.TextBox("ClientName")
+    <input type="submit" id="btnSubmmit" value="搜尋" />
+}
 <table class="table">
     <tr>
         <th>
