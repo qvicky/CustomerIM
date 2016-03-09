@@ -55,9 +55,6 @@ namespace CustomerIM.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,客戶Id,職稱,姓名,Email,手機,電話,IsDeleted")] 客戶聯絡人 客戶聯絡人)
         {
-            //同一個客戶下的聯絡人，其 Email 不能重複
-            //客戶聯絡人 hasSameMoblie = db.客戶聯絡人.Where(p => p.客戶Id == 客戶聯絡人.客戶Id && p.Email == 客戶聯絡人.Email).FirstOrDefault();
-
             if (ModelState.IsValid)
             {
                 客戶聯絡人.IsDeleted = false;  //Vicky : 預設先給False

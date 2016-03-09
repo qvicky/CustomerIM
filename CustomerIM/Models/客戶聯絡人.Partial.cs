@@ -4,32 +4,52 @@
     using System.Linq;
     using System.Web;
     using System.ComponentModel.DataAnnotations;
+    using System.Configuration;
 
     [MetadataType(typeof(客戶聯絡人MetaData))]
     public partial class 客戶聯絡人 {
     }
 
-    public class 客戶聯絡人MetaData {
+    public class 客戶聯絡人MetaData : IValidatableObject {
         public int Id { get; set; }
         public int 客戶Id { get; set; }
+
         [Required(ErrorMessage = "必填欄位")]
         [StringLength(50, ErrorMessage = "欄位長度不得大於 50 個字元")]
         public string 職稱 { get; set; }
+
         [Required(ErrorMessage = "必填欄位")]
         [StringLength(50, ErrorMessage = "欄位長度不得大於 50 個字元")]
         public string 姓名 { get; set; }
+
         [Required(ErrorMessage = "必填欄位")]
         [StringLength(250, ErrorMessage = "欄位長度不得大於 250 個字元")]
         [EmailAddress(ErrorMessage = "郵件格式有誤")]
         public string Email { get; set; }
+
         [StringLength(50, ErrorMessage = "欄位長度不得大於 50 個字元")]
         [自訂手機驗證(ErrorMessage = "格式錯誤，應為 0911-123456")]
         public string 手機 { get; set; }
+
         [StringLength(50, ErrorMessage = "欄位長度不得大於 50 個字元")]
         public string 電話 { get; set; }
+
         public Nullable<bool> IsDeleted { get; set; }
 
         public virtual 客戶資料 客戶資料 { get; set; }
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) {
+            客戶資料Entities db = new 客戶資料Entities();
+            //同一個客戶下的聯絡人，其 Email 不能重複
+            if (Email != "") {
+                客戶聯絡人 hasSameMoblie = db.客戶聯絡人.Where(p => p.客戶Id == 客戶Id && p.Email == Email).FirstOrDefault();
+                if (hasSameMoblie != null) {
+                    yield return new ValidationResult("連絡人郵件不可以重覆", new[] { "Email" });
+                }
+            }
+        }
+
     }
+
 
 }
