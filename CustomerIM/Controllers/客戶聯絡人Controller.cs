@@ -18,7 +18,7 @@ namespace CustomerIM.Controllers
         public ActionResult Index(string ContactName)
         {
             //var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料);
-            var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料).Where(p => p.IsDeleted == false);  //Vicky :  顯示未刪除資料
+            var 客戶聯絡人 = db.客戶聯絡人.Include(客 => 客.客戶資料).Where(p => p.IsDeleted == false).OrderBy(p=>p.客戶Id).AsQueryable();  //Vicky :  顯示未刪除資料
             if (!string.IsNullOrEmpty(ContactName)) {
                 客戶聯絡人 = 客戶聯絡人.Where(p => p.姓名.Contains(ContactName));
             }
